@@ -227,7 +227,7 @@ let sortKey = 'total';
 let sortDir = -1;
 
 async function fetchSubmissions(formId) {
-  const url = `https://api.jotform.com/form/${formId}/submissions?apiKey=${API_KEY}&limit=1000&offset=0`;
+  const url = `https://api.jotform.com/form/${formId}/submissions?apiKey=${API_KEY}&limit=1000&offset=0&t=${Date.now()}`;
   const res = await fetch(url);
   const data = await res.json();
   if (data.responseCode !== 200) return [];
@@ -281,24 +281,34 @@ function aggregate(submissions) {
 
 function renderPodium(ranked) {
   const podium = document.getElementById('podium');
-  const top3 = ranked.slice(0, 3);
-  if (!top3.length) return;
   const medals = ['🥇','🥈','🥉'];
   const labels = ['1st Place','2nd Place','3rd Place'];
   const rankClass = ['rank-1','rank-2','rank-3'];
 
-  podium.innerHTML = top3.map((s, i) => {
-    const pills = TRAITS.filter(t => s.traits[t] > 0)
-      .map(t => `<span class="trait-pill">${t} ×${s.traits[t]}</span>`).join('');
-    return `<div class="podium-card ${rankClass[i]}">
-      <div class="crown">${medals[i]}</div>
-      <div class="podium-rank">${labels[i]}</div>
-      <div class="podium-name">${s.student}</div>
-      <div class="podium-class">Class ${s.class}</div>
-      <div class="podium-score">${s.total}</div>
-      <div class="podium-score-label">Green Card Points</div>
-      <div class="trait-pills">${pills}</div>
-    </div>`;
+  podium.innerHTML = [0,1,2].map(i => {
+    const s = ranked[i];
+    if (s) {
+      const pills = TRAITS.filter(t => s.traits[t] > 0)
+        .map(t => `<span class="trait-pill">${t} ×${s.traits[t]}</span>`).join('');
+      return `<div class="podium-card ${rankClass[i]}">
+        <div class="crown">${medals[i]}</div>
+        <div class="podium-rank">${labels[i]}</div>
+        <div class="podium-name">${s.student}</div>
+        <div class="podium-class">Class ${s.class}</div>
+        <div class="podium-score">${s.total}</div>
+        <div class="podium-score-label">Green Card Points</div>
+        <div class="trait-pills">${pills}</div>
+      </div>`;
+    } else {
+      return `<div class="podium-card ${rankClass[i]}" style="opacity:0.45;">
+        <div class="crown">${medals[i]}</div>
+        <div class="podium-rank">${labels[i]}</div>
+        <div class="podium-name" style="color:#aaa;font-style:italic;">Awaiting submissions</div>
+        <div class="podium-class" style="color:#ccc;">—</div>
+        <div class="podium-score" style="color:#ccc;">—</div>
+        <div class="podium-score-label">Green Card Points</div>
+      </div>`;
+    }
   }).join('');
   podium.style.display = 'flex';
 }
@@ -373,14 +383,13 @@ async function init() {
 
     document.getElementById('loading').style.display = 'none';
 
-    if (!raw.length) {
-      document.getElementById('empty-state').style.display = 'block';
-      document.getElementById('last-updated').textContent = 'No data yet';
-      return;
-    }
-
     allRanked = aggregate(raw);
     renderPodium(allRanked);
+
+    if (!raw.length) {
+      document.getElementById('last-updated').textContent = 'No submissions yet';
+      return;
+    }
     renderStats(raw, allRanked);
     populateClassFilter(allRanked);
     document.getElementById('table-section').style.display = 'block';
