@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Green Card Leaderboard — Alkhandaq Schools</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f0f7f0;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+
+  header {
+    background: #1b5e20;
+    color: white;
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  header h1 { font-size: 1.3rem; font-weight: 700; }
+  header p { font-size: 0.82rem; opacity: 0.75; margin-top: 3px; }
+  #last-updated { font-size: 0.78rem; opacity: 0.7; text-align: right; }
+
+  main { padding: 24px 20px; max-width: 980px; margin: 0 auto; }
+
+  #loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: #388e3c;
+    font-size: 1rem;
+  }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 4px solid #c8e6c9;
+    border-top-color: #2e7d32;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #empty-state {
+    display: none;
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    border: 2px dashed #c8e6c9;
+    color: #555;
+  }
+  #empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+  #empty-state h2 { color: #2e7d32; margin-bottom: 8px; }
+
+  /* Podium */
+  #podium {
+    display: none;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding: 0 8px;
+    flex-wrap: wrap;
+  }
+
+  .podium-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align: center;
+    flex: 1;
+    min-width: 200px;
+    max-width: 260px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border: 2px solid transparent;
+  }
+  .podium-card.rank-1 { border-color: #f9a825; background: linear-gradient(160deg, #fffde7, #fff); }
+  .podium-card.rank-2 { border-color: #90a4ae; background: linear-gradient(160deg, #f5f5f5, #fff); }
+  .podium-card.rank-3 { border-color: #a1887f; background: linear-gradient(160deg, #fbe9e7, #fff); }
+
+  .crown { font-size: 2rem; line-height: 1; margin-bottom: 8px; }
+  .podium-rank { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+  .rank-1 .podium-rank { color: #f9a825; }
+  .rank-2 .podium-rank { color: #78909c; }
+  .rank-3 .podium-rank { color: #8d6e63; }
+  .podium-name { font-size: 0.88rem; font-weight: 700; line-height: 1.3; margin-bottom: 4px; }
+  .podium-class { font-size: 0.75rem; color: #757575; margin-bottom: 12px; }
+  .podium-score { font-size: 2rem; font-weight: 800; color: #2e7d32; }
+  .podium-score-label { font-size: 0.7rem; color: #888; margin-top: 2px; }
+  .trait-pills { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin-top: 10px; }
+  .trait-pill { font-size: 0.65rem; padding: 2px 7px; border-radius: 20px; background: #e8f5e9; color: #2e7d32; font-weight: 600; }
+
+  /* Stats */
+  #stats-bar {
+    display: none;
+    background: white;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 24px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+  .stat { text-align: center; flex: 1; min-width: 80px; }
+  .stat-value { font-size: 1.6rem; font-weight: 800; color: #2e7d32; }
+  .stat-label { font-size: 0.72rem; color: #888; margin-top: 2px; }
+
+  /* Table */
+  #table-section { display: none; }
+  #table-section h2 { font-size: 1rem; font-weight: 700; color: #1b5e20; margin-bottom: 14px; padding-left: 4px; }
+
+  .filter-row { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .filter-row input, .filter-row select {
+    border: 1.5px solid #c8e6c9; border-radius: 8px;
+    padding: 7px 12px; font-size: 0.85rem; background: white; color: #1a1a1a; outline: none;
+  }
+  .filter-row input:focus, .filter-row select:focus { border-color: #2e7d32; }
+  .filter-row input { flex: 1; min-width: 160px; }
+
+  .table-wrap { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.07); overflow-x: auto; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.84rem; min-width: 640px; }
+  thead th {
+    background: #1b5e20; color: white; padding: 11px 12px;
+    text-align: left; font-weight: 600; font-size: 0.78rem;
+    letter-spacing: 0.02em; white-space: nowrap; cursor: pointer; user-select: none;
+  }
+  thead th:hover { background: #2e7d32; }
+  thead th.sorted-asc::after { content: ' ↑'; }
+  thead th.sorted-desc::after { content: ' ↓'; }
+
+  tbody tr { border-bottom: 1px solid #f1f8f1; }
+  tbody tr:hover { background: #f1f8f1; }
+  tbody td { padding: 10px 12px; vertical-align: middle; }
+
+  .rank-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%; font-weight: 700; font-size: 0.8rem;
+  }
+  .rank-badge.gold   { background: #fff8e1; color: #f9a825; border: 2px solid #f9a825; }
+  .rank-badge.silver { background: #f5f5f5; color: #78909c; border: 2px solid #90a4ae; }
+  .rank-badge.bronze { background: #fbe9e7; color: #8d6e63; border: 2px solid #a1887f; }
+  .rank-badge.other  { background: #f5f5f5; color: #9e9e9e; font-size: 0.72rem; }
+
+  .student-name { font-weight: 600; }
+  .class-tag { display: inline-block; background: #e8f5e9; color: #2e7d32; font-size: 0.72rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; margin-left: 6px; }
+  .score-cell { font-weight: 800; font-size: 1rem; color: #2e7d32; }
+  .trait-count { font-size: 0.78rem; color: #ccc; text-align: center; }
+  .trait-count.has-trait { color: #2e7d32; font-weight: 700; }
+  .no-results { text-align: center; padding: 32px; color: #aaa; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🟢 Green Card Leaderboard</h1>
+    <p>Alkhandaq Schools — International Section (Boys)</p>
+  </div>
+  <div id="last-updated">Loading…</div>
+</header>
+
+<main>
+  <div id="loading">
+    <div class="spinner"></div>
+    Fetching submissions…
+  </div>
+
+  <div id="empty-state">
+    <div class="icon">📋</div>
+    <h2>No submissions yet</h2>
+    <p>Green Cards will appear here once teachers start submitting.</p>
+  </div>
+
+  <div id="podium"></div>
+  <div id="stats-bar"></div>
+
+  <div id="table-section">
+    <h2>Full Rankings — All Students</h2>
+    <div class="filter-row">
+      <input type="text" id="search" placeholder="Search student…" oninput="applyFilter()">
+      <select id="class-filter" onchange="applyFilter()">
+        <option value="">All Classes</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortBy('rank', this)">#</th>
+            <th onclick="sortBy('student', this)">Student</th>
+            <th onclick="sortBy('total', this)" class="sorted-desc">Points</th>
+            <th onclick="sortBy('Respect', this)">Respect</th>
+            <th onclick="sortBy('Tolerance', this)">Tolerance</th>
+            <th onclick="sortBy('Uniqueness', this)">Uniqueness</th>
+            <th onclick="sortBy('Teamwork', this)">Teamwork</th>
+            <th onclick="sortBy('Success', this)">Success</th>
+            <th onclick="sortBy('Responsibility', this)">Responsibility</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script>
+const API_KEY = 'ca458dd860fe614d45a4eeb2b41ef475';
+const FORM_IDS = [
+  '261561321029045',
+  '261561078594061',
+  '261561523456053',
+  '261561611302041',
+  '261561147565056'
+];
+const TRAITS = ['Respect','Tolerance','Uniqueness','Teamwork','Success','Responsibility'];
+
+let allRanked = [];
+let sortKey = 'total';
+let sortDir = -1;
+
+async function fetchSubmissions(formId) {
+  const url = `https://api.jotform.com/form/${formId}/submissions?apiKey=${API_KEY}&limit=1000&offset=0`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (data.responseCode !== 200) return [];
+  return data.content || [];
+}
+
+function parseSubmission(sub) {
+  const answers = sub.answers || {};
+  let student = '', cls = '', traits = [], subject = '', teacher = '';
+
+  for (const key of Object.keys(answers)) {
+    const a = answers[key];
+    const text = (a.text || '').toLowerCase();
+    const answer = a.answer;
+
+    if (text.includes('student')) {
+      const val = answer || '';
+      const parts = val.split('—');
+      student = (parts[0] || '').trim();
+      cls = (parts[1] || '').trim();
+    } else if (text.includes('trait')) {
+      if (typeof answer === 'object' && answer !== null) {
+        traits = Object.values(answer).filter(v => TRAITS.includes(v));
+      } else if (typeof answer === 'string' && TRAITS.includes(answer)) {
+        traits = [answer];
+      }
+    } else if (text.includes('subject')) {
+      subject = answer || '';
+    } else if (text.includes('name') && !text.includes('student')) {
+      teacher = answer || '';
+    }
+  }
+
+  return student ? { student, class: cls, traits, subject, teacher } : null;
+}
+
+function aggregate(submissions) {
+  const map = {};
+  for (const sub of submissions) {
+    const key = sub.student;
+    if (!map[key]) {
+      map[key] = { student: sub.student, class: sub.class, total: 0, traits: {} };
+      for (const t of TRAITS) map[key].traits[t] = 0;
+    }
+    for (const t of sub.traits) {
+      if (TRAITS.includes(t)) { map[key].traits[t]++; map[key].total++; }
+    }
+  }
+  return Object.values(map).sort((a, b) => b.total - a.total).map((s, i) => ({ ...s, rank: i + 1 }));
+}
+
+function renderPodium(ranked) {
+  const podium = document.getElementById('podium');
+  const top3 = ranked.slice(0, 3);
+  if (!top3.length) return;
+  const medals = ['🥇','🥈','🥉'];
+  const labels = ['1st Place','2nd Place','3rd Place'];
+  const rankClass = ['rank-1','rank-2','rank-3'];
+
+  podium.innerHTML = top3.map((s, i) => {
+    const pills = TRAITS.filter(t => s.traits[t] > 0)
+      .map(t => `<span class="trait-pill">${t} ×${s.traits[t]}</span>`).join('');
+    return `<div class="podium-card ${rankClass[i]}">
+      <div class="crown">${medals[i]}</div>
+      <div class="podium-rank">${labels[i]}</div>
+      <div class="podium-name">${s.student}</div>
+      <div class="podium-class">Class ${s.class}</div>
+      <div class="podium-score">${s.total}</div>
+      <div class="podium-score-label">Green Card Points</div>
+      <div class="trait-pills">${pills}</div>
+    </div>`;
+  }).join('');
+  podium.style.display = 'flex';
+}
+
+function renderStats(submissions, ranked) {
+  const bar = document.getElementById('stats-bar');
+  const totals = {};
+  for (const t of TRAITS) totals[t] = 0;
+  for (const s of submissions) for (const t of s.traits) if (totals[t] !== undefined) totals[t]++;
+  const topTrait = TRAITS.reduce((a, b) => totals[a] > totals[b] ? a : b);
+
+  bar.innerHTML = `
+    <div class="stat"><div class="stat-value">${submissions.length}</div><div class="stat-label">Total Submissions</div></div>
+    <div class="stat"><div class="stat-value">${ranked.length}</div><div class="stat-label">Students Recognised</div></div>
+    <div class="stat"><div class="stat-value">${ranked.reduce((s,r)=>s+r.total,0)}</div><div class="stat-label">Total Points Awarded</div></div>
+    <div class="stat"><div class="stat-value">${topTrait}</div><div class="stat-label">Most Common Trait</div></div>`;
+  bar.style.display = 'flex';
+}
+
+function populateClassFilter(ranked) {
+  const sel = document.getElementById('class-filter');
+  const classes = [...new Set(ranked.map(r => r.class).filter(Boolean))].sort();
+  classes.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = `Class ${c}`;
+    sel.appendChild(o);
+  });
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById('table-body');
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="9" class="no-results">No students match your filter.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(s => {
+    const rc = s.rank === 1 ? 'gold' : s.rank === 2 ? 'silver' : s.rank === 3 ? 'bronze' : 'other';
+    const cols = TRAITS.map(t => {
+      const v = s.traits[t] || 0;
+      return `<td class="trait-count ${v > 0 ? 'has-trait' : ''}">${v > 0 ? v : '—'}</td>`;
+    }).join('');
+    return `<tr>
+      <td><span class="rank-badge ${rc}">${s.rank}</span></td>
+      <td><span class="student-name">${s.student}</span><span class="class-tag">${s.class}</span></td>
+      <td class="score-cell">${s.total}</td>${cols}
+    </tr>`;
+  }).join('');
+}
+
+function applyFilter() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const cls = document.getElementById('class-filter').value;
+  renderTable(allRanked.filter(s => (!q || s.student.toLowerCase().includes(q)) && (!cls || s.class === cls)));
+}
+
+function sortBy(key, th) {
+  if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = -1; }
+  allRanked.sort((a, b) => {
+    const av = key === 'rank' ? a.rank : key === 'student' ? a.student : (TRAITS.includes(key) ? (a.traits[key]||0) : a.total);
+    const bv = key === 'rank' ? b.rank : key === 'student' ? b.student : (TRAITS.includes(key) ? (b.traits[key]||0) : b.total);
+    return (typeof av === 'string' ? av.localeCompare(bv) : av - bv) * sortDir;
+  });
+  document.querySelectorAll('thead th').forEach(t => t.className = '');
+  th.className = sortDir === -1 ? 'sorted-desc' : 'sorted-asc';
+  applyFilter();
+}
+
+async function init() {
+  try {
+    const results = await Promise.all(FORM_IDS.map(fetchSubmissions));
+    const raw = results.flat().map(parseSubmission).filter(Boolean);
+
+    document.getElementById('loading').style.display = 'none';
+
+    if (!raw.length) {
+      document.getElementById('empty-state').style.display = 'block';
+      document.getElementById('last-updated').textContent = 'No data yet';
+      return;
+    }
+
+    allRanked = aggregate(raw);
+    renderPodium(allRanked);
+    renderStats(raw, allRanked);
+    populateClassFilter(allRanked);
+    document.getElementById('table-section').style.display = 'block';
+    renderTable(allRanked);
+
+    const now = new Date();
+    document.getElementById('last-updated').textContent =
+      `Updated ${now.toLocaleDateString('en-GB', {day:'numeric',month:'short'})} at ${now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;
+  } catch(e) {
+    document.getElementById('loading').innerHTML = `<p style="color:#c62828;text-align:center">Error loading data: ${e.message}</p>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
