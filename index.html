@@ -75,6 +75,14 @@ body{
   letter-spacing:-0.03em;line-height:1.1;
 }
 .header-sub{color:rgba(255,255,255,0.5);font-size:0.76rem;margin-top:4px;font-weight:400;}
+.school-logo-img{
+  height:52px;width:auto;flex-shrink:0;
+  filter:brightness(0) invert(1);
+  opacity:0.72;
+  -webkit-mask-image:radial-gradient(ellipse 82% 72% at center,black 18%,transparent 75%);
+  mask-image:radial-gradient(ellipse 82% 72% at center,black 18%,transparent 75%);
+  pointer-events:none;
+}
 
 /* ── PERIOD TABS ──────────────────────────────────────── */
 .tabs-bar{
@@ -494,6 +502,123 @@ tbody td{padding:12px 16px;vertical-align:middle;}
   border-radius:3px;transition:width .65s cubic-bezier(.4,0,.2,1);
 }
 
+/* ── TRAIT BREAKDOWN ─────────────────────────────────── */
+#trait-breakdown{
+  background:var(--white);border-radius:var(--r-lg);
+  padding:20px 24px;margin-bottom:28px;
+  box-shadow:var(--sh-sm);border:1px solid var(--border);
+}
+.tbd-header{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:18px;
+}
+.tbd-title{
+  font-size:.78rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--g700);
+}
+.tbd-subtitle{font-size:.64rem;color:var(--muted);font-weight:500;margin-left:auto;}
+.tbd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
+.tbd-row{display:flex;align-items:center;gap:10px;}
+.tbd-label{font-size:.72rem;font-weight:700;color:var(--text);width:105px;flex-shrink:0;}
+.tbd-track{flex:1;height:9px;background:var(--g100);border-radius:6px;overflow:hidden;}
+@keyframes tBdFill{from{width:0}to{width:var(--w)}}
+.tbd-fill{
+  height:100%;border-radius:6px;
+  background:linear-gradient(90deg,var(--g500),var(--g700));
+  animation:tBdFill .7s var(--ease) both;
+}
+.tbd-rank1 .tbd-fill{background:linear-gradient(90deg,#f9a825,#e65100);}
+.tbd-rank2 .tbd-fill{background:linear-gradient(90deg,var(--g500),var(--g700));}
+.tbd-count{font-size:.68rem;font-weight:800;color:var(--g700);width:32px;text-align:right;flex-shrink:0;}
+
+/* ── ALL-TIME LEGENDS ────────────────────────────────── */
+#all-time-champions{margin-bottom:4px;}
+.atc-grid{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;}
+.atc-card{
+  flex:1;min-width:220px;max-width:320px;
+  border-radius:var(--r-xl);padding:28px 22px;text-align:center;
+  position:relative;overflow:hidden;cursor:pointer;
+  transition:transform .2s var(--ease),box-shadow .2s var(--ease);
+}
+.atc-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:var(--sh-lg);}
+.atc-rank-1{
+  background:linear-gradient(145deg,#fff8e1,#ffe57f,#fff9c4,#fff);
+  border:2px solid #f9a825;
+  box-shadow:0 8px 32px rgba(249,168,37,.22);
+}
+.atc-rank-2{
+  background:linear-gradient(145deg,#f8f8f8,#e0e0e0,#f5f5f5,#fff);
+  border:2px solid #90a4ae;
+  box-shadow:0 6px 24px rgba(0,0,0,.10);
+}
+.atc-rank-3{
+  background:linear-gradient(145deg,#fbe9e7,#ffccbc,#fff3e0,#fff);
+  border:2px solid #a1887f;
+  box-shadow:0 6px 24px rgba(161,136,127,.18);
+}
+.atc-crown{font-size:2.4rem;display:block;margin-bottom:6px;line-height:1;}
+.atc-rank-label{
+  font-size:.58rem;font-weight:800;text-transform:uppercase;letter-spacing:.14em;
+  opacity:.55;margin-bottom:10px;
+}
+.atc-name{font-size:1.05rem;font-weight:900;color:var(--text);line-height:1.2;margin-bottom:4px;}
+.atc-class{font-size:.68rem;font-weight:600;color:var(--muted);margin-bottom:14px;}
+.atc-pts{font-size:2.6rem;font-weight:900;color:var(--g700);line-height:1;}
+.atc-pts-sub{font-size:.58rem;font-weight:600;color:var(--muted);display:block;margin-bottom:14px;}
+.atc-traits{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;}
+.atc-trait{
+  font-size:.56rem;font-weight:700;padding:3px 8px;border-radius:12px;
+  background:rgba(46,125,50,.09);color:var(--g700);
+}
+.atc-rank-1 .atc-pts{color:#b45309;}
+.atc-rank-1 .atc-trait{background:rgba(249,168,37,.15);color:#92400e;}
+.atc-empty{text-align:center;padding:40px;color:var(--muted);font-size:.8rem;font-style:italic;}
+
+/* ── CLASS CHAMPIONS ─────────────────────────────────── */
+#cc-grade-tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:20px;}
+.cc-tab{
+  padding:7px 17px;border:1.5px solid var(--border);border-radius:20px;
+  background:var(--white);font-family:'Poppins',sans-serif;
+  font-size:.74rem;font-weight:700;cursor:pointer;
+  transition:all .16s var(--ease);color:var(--muted);
+}
+.cc-tab:hover:not(.active){border-color:var(--g500);color:var(--g700);transform:translateY(-2px);box-shadow:var(--sh-xs);}
+.cc-tab.active{background:var(--g700);color:white;border-color:var(--g700);box-shadow:0 3px 14px rgba(46,125,50,.32);}
+#class-champions{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin-bottom:4px;min-height:150px;}
+@keyframes ccSlideIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.cc-card{
+  width:158px;border-radius:14px;padding:14px 10px 12px;text-align:center;
+  border:1.5px solid var(--border);background:#fafafa;
+  transition:transform .16s var(--ease),box-shadow .16s var(--ease);
+  cursor:default;animation:ccSlideIn .26s var(--ease) both;
+}
+.cc-card.won{
+  background:linear-gradient(160deg,var(--g100),#fff);
+  border-color:var(--g500);cursor:pointer;
+}
+.cc-card.won:hover{transform:scale(1.06) translateY(-4px);box-shadow:0 8px 24px rgba(56,142,60,.22);}
+.cc-badge{
+  display:inline-block;background:var(--g800);color:white;
+  font-size:.72rem;font-weight:800;padding:2px 10px;
+  border-radius:20px;margin-bottom:8px;letter-spacing:.04em;
+}
+.cc-badge.empty-b{background:#e0e0e0;color:#aaa;}
+.cc-trophy{font-size:1.2rem;line-height:1;margin-bottom:6px;}
+.cc-name{
+  font-size:.63rem;font-weight:700;color:var(--text);
+  line-height:1.35;margin-bottom:6px;
+  overflow:hidden;display:-webkit-box;
+  -webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;
+}
+.cc-pts{font-size:1.45rem;font-weight:900;color:var(--g700);line-height:1;margin-bottom:6px;}
+.cc-pts-sub{font-size:.52rem;font-weight:600;color:var(--muted);margin-left:2px;}
+.cc-traits{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;}
+.cc-trait{
+  font-size:.52rem;font-weight:700;padding:2px 6px;
+  border-radius:10px;background:rgba(46,125,50,.1);color:var(--g700);
+}
+.cc-empty-lbl{font-size:.58rem;color:#bbb;font-style:italic;margin-top:10px;}
+
 /* ── WALL OF FAME ─────────────────────────────────────── */
 #wall-of-fame{
   display:grid;
@@ -592,6 +717,7 @@ tbody td{padding:12px 16px;vertical-align:middle;}
   .site-header{padding:22px 18px 20px;}
   .header-title{font-size:1.28rem;}
   .header-logo{width:50px;height:50px;font-size:1.65rem;border-radius:14px;}
+  .school-logo-img{height:36px;}
   .main-wrap{padding:20px 16px 52px;}
   #stats-bar{grid-template-columns:1fr 1fr;}
   #podium{gap:8px;}
@@ -689,6 +815,7 @@ tbody td{padding:12px 16px;vertical-align:middle;}
         <div class="header-sub">Alkhandaq Schools — International Section (Boys)</div>
       </div>
     </div>
+    <img class="school-logo-img" src="logo.png" alt="Alkhandaq Schools" onerror="this.style.display='none'">
   </div>
 </header>
 
@@ -727,6 +854,9 @@ tbody td{padding:12px 16px;vertical-align:middle;}
 
   <!-- STAT CARDS -->
   <div id="stats-bar"></div>
+
+  <!-- TRAIT BREAKDOWN -->
+  <div id="trait-breakdown" style="display:none"></div>
 
   <!-- PODIUM -->
   <div id="podium"></div>
@@ -783,7 +913,7 @@ tbody td{padding:12px 16px;vertical-align:middle;}
   <div id="wall-of-fame"></div>
 
   <!-- TERM CHAMPIONS -->
-  <div class="big-sh" style="margin-top:52px">
+  <div class="big-sh">
     <span class="big-sh-icon">🏆</span>
     <div class="big-sh-text">
       Termly Champions
@@ -791,6 +921,27 @@ tbody td{padding:12px 16px;vertical-align:middle;}
     </div>
   </div>
   <div id="term-section"></div>
+
+  <!-- CLASS CHAMPIONS -->
+  <div class="big-sh">
+    <span class="big-sh-icon">🎖️</span>
+    <div>
+      Class Champions
+      <div class="big-sh-sub">End-of-term award · Top student in every class</div>
+    </div>
+  </div>
+  <div id="cc-grade-tabs"></div>
+  <div id="class-champions"></div>
+
+  <!-- ALL-TIME LEGENDS -->
+  <div class="big-sh">
+    <span class="big-sh-icon">👑</span>
+    <div>
+      All-Time Legends
+      <div class="big-sh-sub">Highest points accumulated across the entire academic year</div>
+    </div>
+  </div>
+  <div id="all-time-champions"></div>
 
 </div><!-- /main-wrap -->
 
@@ -1296,6 +1447,153 @@ function renderTermChampions(rawSubs) {
   }).join('');
 }
 
+/* ── TRAIT BREAKDOWN ───────────────────────────────────── */
+function renderTraitBreakdown(rawSubs) {
+  const el = document.getElementById('trait-breakdown');
+  if (!rawSubs.length) { el.style.display = 'none'; return; }
+
+  const totals = {};
+  for (const t of TRAITS) totals[t] = 0;
+  for (const s of rawSubs) for (const t of s.traits) if (totals[t] !== undefined) totals[t]++;
+  const sorted = [...TRAITS].sort((a, b) => totals[b] - totals[a]);
+  const max = Math.max(...Object.values(totals), 1);
+  const total = Object.values(totals).reduce((a, b) => a + b, 0);
+
+  el.innerHTML = `
+    <div class="tbd-header">
+      <div class="tbd-title">Most Common Traits</div>
+      <div class="tbd-subtitle">${total} total green cards issued</div>
+    </div>
+    <div class="tbd-grid">
+      ${sorted.map((t, i) => {
+        const pct = Math.round(totals[t] / max * 100);
+        return `<div class="tbd-row tbd-rank${i < 1 ? 1 : 2}">
+          <div class="tbd-label">${t}</div>
+          <div class="tbd-track"><div class="tbd-fill" style="--w:${pct}%;width:${pct}%;animation-delay:${i * 0.08}s"></div></div>
+          <div class="tbd-count">${totals[t]}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  el.style.display = 'block';
+}
+
+/* ── ALL-TIME LEGENDS ──────────────────────────────────── */
+let allTimeLegends = [];
+
+function renderAllTimeChampions(rawSubs) {
+  const el = document.getElementById('all-time-champions');
+  allTimeLegends = aggregateForPeriod(rawSubs).slice(0, 3);
+
+  if (!allTimeLegends.length) {
+    el.innerHTML = '<div class="atc-empty">Data will appear here once teachers start submitting green cards.</div>';
+    return;
+  }
+
+  const crowns  = ['👑', '🥈', '🥉'];
+  const labels  = ['Grand Champion', 'Silver Legend', 'Bronze Legend'];
+
+  el.innerHTML = `<div class="atc-grid">
+    ${allTimeLegends.map((s, i) => {
+      const traits = TRAITS.filter(t => s.traits[t] > 0)
+        .sort((a, b) => s.traits[b] - s.traits[a])
+        .map(t => `<span class="atc-trait">${t} ×${s.traits[t]}</span>`).join('');
+      return `<div class="atc-card atc-rank-${i + 1}" onclick="openAllTimeLegendModal(${i})">
+        <span class="atc-crown">${crowns[i]}</span>
+        <div class="atc-rank-label">${labels[i]}</div>
+        <div class="atc-name">${s.student}</div>
+        <div class="atc-class">Class ${s.class}</div>
+        <div class="atc-pts">${s.total}<span class="atc-pts-sub">points all time</span></div>
+        <div class="atc-traits">${traits}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function openAllTimeLegendModal(idx) {
+  displayedData = allTimeLegends;
+  openModal(idx);
+}
+
+/* ── CLASS CHAMPIONS ───────────────────────────────────── */
+let classChampionMap = {};
+let gradeSections    = {};
+let activeChampGrade = 3;
+
+function renderClassChampions(rawSubs) {
+  const allStudents = aggregateForPeriod(rawSubs);
+  classChampionMap = {};
+  for (const s of allStudents) {
+    if (s.class && !classChampionMap[s.class]) classChampionMap[s.class] = s;
+  }
+
+  // Grades 3–9 default A+B; grades 10–12 are single-class (no letter)
+  gradeSections = {};
+  for (let g = 3;  g <= 9;  g++) gradeSections[g] = new Set(['A','B']);
+  for (let g = 10; g <= 12; g++) gradeSections[g] = new Set(['']);
+
+  // Extend 3–9 with any extra sections found in data
+  for (const cls of Object.keys(classChampionMap)) {
+    const m = cls.match(/^(\d+)([A-Za-z]+)$/);
+    if (m) {
+      const g = parseInt(m[1]), sec = m[2].toUpperCase();
+      if (g >= 3 && g <= 9) gradeSections[g].add(sec);
+    }
+  }
+
+  // Render grade selector tabs
+  const tabsEl = document.getElementById('cc-grade-tabs');
+  tabsEl.innerHTML = [3,4,5,6,7,8,9,10,11,12].map(g =>
+    `<button class="cc-tab${g === activeChampGrade ? ' active' : ''}" data-grade="${g}" onclick="setChampGrade(${g})">Grade ${g}</button>`
+  ).join('');
+
+  renderChampionCards(activeChampGrade);
+}
+
+function setChampGrade(grade) {
+  activeChampGrade = grade;
+  document.querySelectorAll('.cc-tab').forEach(t => t.classList.toggle('active', +t.dataset.grade === grade));
+  renderChampionCards(grade);
+}
+
+function renderChampionCards(grade) {
+  const container = document.getElementById('class-champions');
+  const sections  = [...(gradeSections[grade] || new Set(['A','B']))].sort();
+
+  container.innerHTML = sections.map((sec, idx) => {
+    const cls    = sec ? `${grade}${sec}` : `${grade}`;
+    const winner = classChampionMap[cls];
+
+    if (winner) {
+      const topTraits = TRAITS
+        .filter(t => winner.traits[t] > 0)
+        .sort((a,b) => winner.traits[b] - winner.traits[a])
+        .slice(0, 2)
+        .map(t => `<span class="cc-trait">${t}</span>`)
+        .join('');
+
+      return `<div class="cc-card won" style="animation-delay:${idx * 0.07}s" onclick="openClassWinner('${cls}')">
+        <div class="cc-badge">${cls}</div>
+        <div class="cc-trophy">🏆</div>
+        <div class="cc-name">${winner.student}</div>
+        <div class="cc-pts">${winner.total}<span class="cc-pts-sub">pts</span></div>
+        ${topTraits ? `<div class="cc-traits">${topTraits}</div>` : ''}
+      </div>`;
+    }
+
+    return `<div class="cc-card" style="animation-delay:${idx * 0.07}s">
+      <div class="cc-badge empty-b">${cls}</div>
+      <div class="cc-empty-lbl">No submissions yet</div>
+    </div>`;
+  }).join('');
+}
+
+function openClassWinner(cls) {
+  const s = classChampionMap[cls];
+  if (!s) return;
+  displayedData = [s];
+  openModal(0);
+}
+
 /* ── INIT ──────────────────────────────────────────────── */
 async function init() {
   document.getElementById('loading').style.display       = 'block';
@@ -1311,13 +1609,16 @@ async function init() {
 
     if (!allRaw.length) {
       document.getElementById('empty-state').style.display = 'block';
-      renderWallOfFame([]); renderTermChampions([]); return;
+      renderTraitBreakdown([]); renderWallOfFame([]); renderTermChampions([]); renderClassChampions([]); renderAllTimeChampions([]); return;
     }
 
     populateClassChips(aggregateForPeriod(allRaw));
     rerenderPeriod();
+    renderTraitBreakdown(allRaw);
     renderWallOfFame(allRaw);
     renderTermChampions(allRaw);
+    renderClassChampions(allRaw);
+    renderAllTimeChampions(allRaw);
 
   } catch(e) {
     document.getElementById('loading').innerHTML =
